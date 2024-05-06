@@ -16,3 +16,11 @@ function pad(val) {
     return valStr
   }
 }
+
+
+// function initializeClickListeners() {
+  
+  //   const elBoard = document.querySelector('.board')
+  // This specifies the event type to listen for, in this case, the contextmenu event
+//   elBoard.addEventListener('contextmenu', flagCell, false)
+// }
