@@ -1,6 +1,6 @@
 'use strict'
 const MINE = '💣'
-const EMPTY = 'empty'
+const EMPTY = ' '
 const FLAG = '🚩'
 const NUM = 'num'
 
@@ -27,13 +27,13 @@ var gBoard
 
 function onInit() {
   // stopTimer()
+  clearInterval(gTimeInterval)
   document.querySelector('.minutes').innerHTML = `00`
   document.querySelector('.seconds').innerHTML = `00`
 
   gBoard = buildBoard()
-  // console.log(gGame)
+  setMinesOnBoard(gLevel, gBoard)
   console.log(gBoard)
-  clearInterval(gTimeInterval)
   renderBoard(gBoard)
   setMinesNegsCount(gBoard)
   gGame.isOn = true
@@ -56,18 +56,17 @@ function buildBoard() {
       }
       board[i][j] = cell
 
-      // set the mines manually done
-      if ((i === 0 && j === 1) || (i === 3 && j === 2)) {
-        cell.type = MINE
-        cell.isMine = true
-        gGame.mines.push(board[i][j].location)
-      }
+      // // turn off after i done 
+      // if ((i === 0 && j === 1) || (i === 3 && j === 2)) {
+      //   cell.type = MINE
+      //   cell.isMine = true
+      //   gGame.mines.push(board[i][j].location)
+      // }
     }
   }
-  // here to call the function mine that set them in the table
 
   setMinesNegsCount(board)
-  board[2][0].type = EMPTY
+
   // Return the created board
   return board
 }
@@ -108,39 +107,14 @@ function renderBoard(board) {
   elBoard.innerHTML = strHtml
 }
 
-// // location is an object like this - { i: 2, j: 7 }
-// function renderCell(i, j, value) {
-//   // Select the elCell and set the value
-//   const elCell = document.querySelector(`.hidden cell-${i}-${j}` || `.seen cell-${i}${j}`)
-//   console.log('elCell', elCell)
-
-//   if (value === 0) {
-//     value = ''
-//     console.log(`Setting cell (${i}, ${j}) to empty string`)
-//   }
-//   elCell.innerHTML = value
-// }
-
-//Called when a cell is clicked
 
 function onCellClicked(elCell, i, j) {
   const clickedCell = gBoard[i][j]
   // console.log('before', clickedCell)
   if (!gGame.isOn || clickedCell.isMarked || clickedCell.isShown) return
 
-  if (gFirstClick) {
-    startTimer()
-  }
-
-  // if (clickedCell.isMine) {
-  //   if (!gFirstClick) {
-  //     clickedOnMine(elCell, clickedCell)
-  //     elCell.classList.remove('hidden')
-  //     elCell.classList.add('seen')
-  //     clickedCell.isShown = true
-  //     console.log('ismine:', clickedCell)
-  //     return
-  //   }
+  // if (gFirstClick) {
+  //   startTimer()
   // }
 
   if (clickedCell.isMine) {
@@ -149,7 +123,7 @@ function onCellClicked(elCell, i, j) {
 
   if (clickedCell.type === EMPTY) {
     // onEmptyCellClicked(elCell, i , j)
-    expandShown(gBoard, clickedCell, i, j)
+    expandShown(gBoard, i, j)
   }
 
   gFirstClick = false
@@ -162,63 +136,30 @@ function onCellClicked(elCell, i, j) {
   renderBoard(gBoard)
 }
 
-function expandShown(board, elCell, rowIdx, colIdx) {
-  // When user clicks a cell with no mines around, we need to open
-  // not only that cell, but also its neighbors.
-  // NOTE: start with a basic implementation that only opens
-  // the non-mine 1st degree neighbors
-  var neighbors = []
+function expandShown(board, rowIdx, colIdx) {
+  if (board[rowIdx][colIdx].isShown || board[rowIdx][colIdx].isMarked) return
+  board[rowIdx][colIdx].isShown = true
+  if (board[rowIdx][colIdx].minesAroundCount > 0) return
 
   for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
-    if (i < 0 || i === gGame.SIZE) continue
     for (var j = colIdx - 1; j <= colIdx + 1; j++) {
-      if (j < 0 || j >= gGame.SIZE) continue
-
-      var currCell = board[rowIdx][colIdx]
-      console.log('currCell:', currCell)
-      console.log('elCell1', elCell)
-
-      
-      if (i === rowIdx && j === colIdx) continue
-      neighbors.push({ row: i, col: j })
-
-      // for (var n = 0; n < neighbors; n++) {
-        console.log('elCell2', elCell)
-        
-
-        if (!currCell.isMine && !currCell.isShown) {
-          currCell.innerHTML =
-            currCell.minesAroundCount <= 1 ? '' : currCell.minesAroundCount
+      if (
+        i >= 0 &&
+        i < board.length &&
+        j >= 0 &&
+        j < board.length &&
+        (i - rowIdx) * (j - colIdx) === 0 &&
+        (i !== rowIdx || j !== colIdx)
+      ) {
+        if (!board[i][j].minesAroundCount) expandShown(board, i, j)
+        else if (board[i][j].minesAroundCount > 0) {
+          board[i][j].isShown = true
         }
-
-        if (currCell.minesAroundCount === 0){
-          elCell.location === currCell.location ? expandShown(board, elCell, i, j) : console.log('the same')
-
-        }
-        else return currCell.minesAroundCount
-
-        currCell.isShown = true
-        // neighbors[n].isShown = true
-        console.log('board:', gBoard)
-
-      // }
-      console.log('neighbors', neighbors)
+      }
     }
   }
-
-  renderBoard(gBoard)
-  elCell.isShown = true
-  console.log('after:',gBoard)
-
-  // BONUS: if you have the time later, try to work more like the
-  // real algorithm (see description at the Bonuses section below)
 }
 
-// function onEmptyCellClicked(elCell, i , j ) {
-
-// console.log('i', i)
-// console.log('j', j)
-// }
 function onCellMarked(elCell, ev, i, j) {
   //   Called when a cell is right- clicked See how you can hide the context
 
@@ -241,26 +182,6 @@ function onCellMarked(elCell, ev, i, j) {
   }
 }
 
-function addFlag(elCell) {
-  elCell.innerHTML = FLAG
-  elCell.classList.remove('hidden')
-}
-
-function removeFlag(elCell) {
-  if (elCell.type === MINE) {
-    elCell.innerHTML = MINE
-    //donst bring back flag
-  } else {
-    elCell.innerHTML = EMPTY
-  }
-  // elCell.classList.add
-  renderBoard(gBoard)
-}
-
-// function onRightClick(ev) {
-
-// }
-
 function clickedOnMine(clickedCell) {
   console.log('clickedOnMine:', clickedCell)
 
@@ -276,4 +197,5 @@ function checkGameOver() {
 function endGame() {
   alert('you Lose :( ')
   stopTimer()
+  gGame.isOn = false
 }

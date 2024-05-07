@@ -18,9 +18,18 @@ function pad(val) {
 }
 
 
-// function initializeClickListeners() {
-  
-  //   const elBoard = document.querySelector('.board')
-  // This specifies the event type to listen for, in this case, the contextmenu event
-//   elBoard.addEventListener('contextmenu', flagCell, false)
-// }
+function findEmptyCell(gBoard) {
+  const emptyCells = []
+
+  for (var i = 1; i < gBoard.length - 1; i++) {
+    for (var j = 1; j < gBoard[i].length - 1; j++) {
+      const currCell = gBoard[i][j]
+      if (!currCell.isMine) emptyCells.push({ i, j })
+    }
+  }
+
+  if (!emptyCells.length) return null
+
+  const randomIdx = getRandomInt(0, emptyCells.length)
+  return emptyCells[randomIdx] // give the position in the array
+}
