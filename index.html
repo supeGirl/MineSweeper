@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel="stylesheet" href="css/mine-sweeper.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/mine-sweeper.css" />
     <title>Mine Sweeper</title>
-</head>
-<body onload="onInit()">
+  </head>
+  <body onload="onInit()">
     <h1>Let`s play 😊</h1>
     <div class="console">
-        <h2>Score <span class="score">0</span></h2>
-        <button class="player" onclick="onInit()">
-            <span class="player-emoji">😀</span>
-        </button>
-        <h2>Timer <span class="minutes">00</span>:<span class="seconds">00</span></h2>
-        <table>
-            <tbody class="board-game"></tbody>
-        </table>
+      <h2>Score <span class="score">0</span></h2>
+      <button class="player" onclick="onInit()">
+        <span class="player-emoji">😀</span>
+      </button>
+      <h2>Timer <span class="minutes">00</span>:<span class="seconds">00</span></h2>
+      <br />
+      lives:
+      <span class="life"></span>
+      Mine count:
+      <span class="mine-count">0</span>
+      hints: <span class="hints">3</span>
+
+      <table>
+        <tbody class="board-game"></tbody>
+      </table>
     </div>
-    <script src="js/util.js"></script> 
-    <script src="js/main.js"></script> 
-    <script src="js/game.js"></script> 
+    <script src="js/util.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/game.js"></script>
     <footer>
-        <p>&copy; Keren Vasserman, All rights reserved.</p>
-      </footer>
-</body>
+      <p>&copy; Keren Vasserman, All rights reserved.</p>
+    </footer>
+  </body>
 </html>

@@ -1,8 +1,16 @@
 'use strict'
 const MINE = '💣'
-const EMPTY = ' '
+const EMPTY = 'empty'
+
 const FLAG = '🚩'
 const NUM = 'num'
+const LIFE = '❤'
+
+const tileType = {
+  EMPTY: 'empty',
+  MINE: '💣',
+  NUM: 'num',
+}
 
 const gGame = {
   isOn: false,
@@ -11,6 +19,13 @@ const gGame = {
   secsPassed: 0,
   mines: [],
 }
+const gLevels = [
+  {NAME: 'easy',
+    SIZE: 4,
+    MINES: 2,
+  }
+]
+  
 
 const gLevel = {
   //later will be update by lvl
@@ -21,51 +36,51 @@ const gLevel = {
 var gIntervalId
 var gTimeInterval
 var gFirstClick
+var gUserLife = 2
 
 //Model:
-var gBoard
+var gBoard = [];
 
 function onInit() {
-  // stopTimer()
+  stopTimer()
   clearInterval(gTimeInterval)
+  clearInterval(gUserLife)
+  updateLife()
   document.querySelector('.minutes').innerHTML = `00`
   document.querySelector('.seconds').innerHTML = `00`
-
+  document.querySelector('.life').innerHTML = ''
   gBoard = buildBoard()
-  setMinesOnBoard(gLevel, gBoard)
-  console.log(gBoard)
+  console.log('onInit gboardL', gBoard)
   renderBoard(gBoard)
-  setMinesNegsCount(gBoard)
   gGame.isOn = true
   gFirstClick = true
 }
 
 function buildBoard() {
   //Build the board
-  const board = []
+  var board = []
   for (var i = 0; i < gLevel.SIZE; i++) {
     board.push([])
     for (var j = 0; j < gLevel.SIZE; j++) {
       const cell = {
-        type: EMPTY,
-        location: { i, j },
+        type: tileType.EMPTY,
+        location: {i, j},
         minesAroundCount: 0,
         isShown: false,
         isMine: false,
         isMarked: false,
+        initialState: true,
       }
       board[i][j] = cell
 
-      // // turn off after i done 
-      // if ((i === 0 && j === 1) || (i === 3 && j === 2)) {
-      //   cell.type = MINE
-      //   cell.isMine = true
-      //   gGame.mines.push(board[i][j].location)
-      // }
+      // // turn off after i done
+      if ((i === 0 && j === 1) || (i === 3 && j === 2)) {
+        cell.type = MINE
+        cell.isMine = true
+        gGame.mines.push(board[i][j].location)
+      }
     }
   }
-
-  setMinesNegsCount(board)
 
   // Return the created board
   return board
@@ -80,19 +95,22 @@ function renderBoard(board) {
     strHtml += `\n<tr>`
     for (var j = 0; j < board[i].length; j++) {
       const cell = board[i][j]
-      const className = cell.isShown
-        ? `seen cell-${i}-${j}`
-        : `hidden cell-${i}-${j}`
-      var cellContent = cell.isShown
-        ? cell.type === MINE
-          ? MINE
-          : cell.minesAroundCount
-        : EMPTY
 
-      if (cell.type === MINE) {
-        cellContent = MINE
-      } else {
-        cellContent = cell.minesAroundCount > 0 ? cell.minesAroundCount : EMPTY
+      var className = cell.isShown ? `seen cell-${i}-${j}` : `hidden cell-${i}-${j}`
+      // maybe bring here an if Q to decide with type i should get
+      // if (!cell.initialState) {
+        var cellContent = cell.isShown ? (cell.type === MINE ? MINE : cell.minesAroundCount) : EMPTY
+      // }
+
+      if (cell.isMarked) {
+        cellContent = FLAG
+        className = 'marked'
+      } else if (cell.isShown) {
+        if (cell.type === MINE) {
+          cellContent = MINE
+        } else {
+          cellContent = cell.minesAroundCount > 0 ? cell.minesAroundCount : EMPTY
+        }
       }
 
       strHtml += `\n\t<td data-i="${i}" data-j="${j}"
@@ -107,32 +125,31 @@ function renderBoard(board) {
   elBoard.innerHTML = strHtml
 }
 
-
 function onCellClicked(elCell, i, j) {
   const clickedCell = gBoard[i][j]
   // console.log('before', clickedCell)
   if (!gGame.isOn || clickedCell.isMarked || clickedCell.isShown) return
 
-  // if (gFirstClick) {
-  //   startTimer()
-  // }
+  if (gFirstClick) {
+    gFirstClick = false
 
-  if (clickedCell.isMine) {
-    clickedOnMine(clickedCell)
+    placeMinesOnBoard(gLevel, gBoard, i, j)
+    setMinesNegsCount(gBoard)
   }
 
   if (clickedCell.type === EMPTY) {
     // onEmptyCellClicked(elCell, i , j)
     expandShown(gBoard, i, j)
   }
+  if (clickedCell.isMine) {
+    clickedOnMine(clickedCell)
+  }
 
-  gFirstClick = false
   clickedCell.isShown = true
   elCell.classList.remove('hidden')
   elCell.classList.add('seen')
   // console.log('clickedCell:', clickedCell)
 
-  setMinesNegsCount(gBoard, i, j)
   renderBoard(gBoard)
 }
 
@@ -158,35 +175,50 @@ function expandShown(board, rowIdx, colIdx) {
       }
     }
   }
+  console.log('board:', board)
+  
+  renderBoard(board)
 }
 
 function onCellMarked(elCell, ev, i, j) {
   //   Called when a cell is right- clicked See how you can hide the context
 
   ev.preventDefault()
+  const clickedCell = gBoard[i][j]
 
   if (!gGame.isOn) return
-  const clickedCell = gBoard[i][j]
   if (clickedCell.isShown) return
 
   //toggle the visual appetence base on its mark
   clickedCell.isMarked = !clickedCell.isMarked
-
   if (clickedCell.isMarked) {
-    addFlag(elCell)
+    elCell.innerText = FLAG
+    elCell.classList.remove('hidden')
     elCell.classList.add('marked')
+    elCell.initialState = false
   } else {
-    elCell.classList.remove('marked')
-    elCell.classList.add('hidden')
-    removeFlag(elCell)
+    elCell.innerText = ''
+  }
+}
+//maybe make an array and pop them print in for loop
+function updateLife() {
+  var elLife = document.querySelector('.life')
+  for (var i = 0; i < gUserLife; i++) {
+    elLife.innerHTML += LIFE
   }
 }
 
 function clickedOnMine(clickedCell) {
   console.log('clickedOnMine:', clickedCell)
+  if (clickedCell.isMarked) return
 
-  //remove one live after
-  endGame()
+  if (clickedCell.isMine) {
+    gUserLife--
+  }
+  if (gUserLife === 0) {
+    endGame()
+  }
+  renderBoard(gBoard)
 }
 
 function checkGameOver() {

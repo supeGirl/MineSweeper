@@ -19,43 +19,31 @@ function countNegs(board, rowIdx, colIdx) {
     for (var j = colIdx - 1; j <= colIdx + 1; j++) {
       if (j < 0 || j >= board[i].length) continue
       if (i === rowIdx && j === colIdx) continue
+      console.log('countNegs', board[i][j])
       if (board[i][j].type === MINE) neighborsCount++
     }
   }
   return neighborsCount
 }
 
-function addFlag(elCell) {
-  elCell.innerHTML = FLAG
-  elCell.classList.remove('hidden')
-}
+function placeMinesOnBoard(gLevel, board, cellI, cellJ) {
+  const elMine = document.querySelector('.mine-count')
+  var mineCount = 0 
+  for (var i = 0; i < gLevel.MINES; i++) {
+    const randomI = getRandomInt(0, gLevel.SIZE);
+    const randomJ = getRandomInt(0, gLevel.SIZE);
+    const randomCell = board[randomI][randomJ]; 
+    randomCell.type = MINE
+    randomCell.isMine = true
+    randomCell.location = {i: randomI, j: randomJ}
+    gGame.mines.push(randomCell.location)
 
-function removeFlag(elCell) {
-  if (elCell.type === MINE) {
-    elCell.innerHTML = MINE
-    //don`st bring back flag
-  } else {
-    elCell.innerHTML = EMPTY
+    // board[emptyCell.i][emptyCell.j].isMine = true
+    // console.log('gLevel.MINES:', gLevel.MINES)
+    mineCount++
+    setMinesNegsCount(board)
   }
-  // elCell.classList.add
-  renderBoard(gBoard)
-}
-
-function addMine(gBoard,i,j){
-    gBoard[i][j].type = MINE
-    gBoard[i][j].isMine = true
-}
-
-function setMinesOnBoard(gLevel,gBoard) {
-    var minesAdded = 0
-    while(minesAdded < gLevel.MINES){
-
-        const emptyCell = findEmptyCell(gBoard)
-        if (!emptyCell) return
-        const {i, j} = emptyCell
-        addMine(gBoard,i,j)
-        minesAdded++
-    }
+  elMine.innerHTML = mineCount
 }
 
 function startTimer() {
