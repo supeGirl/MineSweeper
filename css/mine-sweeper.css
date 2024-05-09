@@ -1,44 +1,50 @@
 body {
   background-color: beige;
   font-family: 'Courier New', Courier, monospace;
-  color: black;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .console {
-  /* height: 400px; */
-  width: 400px;
+  width: 90vw;
   background-color: #dcd6bc;
-  margin-left: 50px;
-  margin-top: 50px;
-  margin-right: 50px;
-  margin-bottom: 50px;
-  /* border: 5px solid #bab7a9; */
-  /* display: flex; */
- 
+  margin: 50px auto;
+  padding: 20px;
+  border: 5px solid #bab7a9;
 }
 h2 {
   display: inline-block;
   margin-left: 10px;
   padding: auto;
 }
-button{
-    margin: 10px;
+button {
+  margin: 10px;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
 }
 
 table {
-  width: 300px;
-  min-height: 300px;
-  margin :100px auto;
-  margin-bottom: 100px;
+  border-spacing: 3px;
+  margin: 0 auto;
+  height: 50px;
+
   border-collapse: separate;
   background-color: lightgray;
-  /* border: 5px solid; */
 }
 
-
 .board-game td {
-  width: 50px;
-  height: 50px;
+  width: 53px;
+  height: 53px;
   text-align: center;
   padding: 10px;
   cursor: pointer;
@@ -46,10 +52,16 @@ table {
   border-color: #f5f3eb #bab7a9 #bab7a9 #fff9db;
   box-sizing: border-box;
 }
+.board-container {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-.hidden{
-    text-indent: -9999px    
-} 
+.hidden {
+  text-indent: -9999px;
+}
 
 .player {
   background-color: transparent;
@@ -62,7 +74,103 @@ table {
   font-size: 35px;
 }
 
-/* .hidden{
-  background-color: rgb(222, 227, 179);
-} */
+.footer {
+  background-color: #333;
+  color: #fff;
+  padding: 20px;
 
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn {
+  padding: 0.6em 2em;
+  border: none;
+  outline: none;
+  color: rgb(255, 255, 255);
+  background: #111;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 10px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.btn:before {
+  content: '';
+  background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  background-size: 400%;
+  z-index: -1;
+  filter: blur(5px);
+  -webkit-filter: blur(5px);
+  width: calc(100% + 4px);
+  height: calc(100% + 4px);
+  animation: glowing-btn 20s linear infinite;
+  transition: opacity 0.3s ease-in-out;
+  border-radius: 10px;
+}
+
+@keyframes glowing-btn {
+  0% {
+    background-position: 0 0;
+  }
+  50% {
+    background-position: 400% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.btn:after {
+  z-index: -1;
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #222;
+  left: 0;
+  top: 0;
+  border-radius: 10px;
+}

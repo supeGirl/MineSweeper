@@ -7,7 +7,7 @@
     <title>Mine Sweeper</title>
   </head>
   <body onload="onInit()">
-    <h1>Let`s play 😊</h1>
+
     <div class="console">
       <h2>Score <span class="score">0</span></h2>
       <button class="player" onclick="onInit()">
@@ -19,17 +19,29 @@
       <span class="life"></span>
       Mine count:
       <span class="mine-count">0</span>
-      hints: <span class="hints">3</span>
+      <!-- hints: <span class="hints">3</span> -->
+      <br />
+      <button class="btn beg" role="button" onclick="changeLevel(4,2)">Beginner</button>
+      <button class="btn med" role="button" onclick="changeLevel(8,14)">Medium</button>
+      <button class="btn adv" role="button" onclick="changeLevel(12,32)">Advanced</button>
 
       <table>
-        <tbody class="board-game"></tbody>
+        <tbody class="board-game" data-cols="4" data-rows="4"></tbody>
       </table>
     </div>
+    <div class="modal">
+      <div class="modal-content">
+        <span class="close" onclick=" hideModal()">&times;</span>
+        <p class="modal-message"></p>
+      </div>
+    </div>
     <script src="js/util.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/click.js"></script>
     <script src="js/game.js"></script>
+    <script src="js/main.js"></script>
     <footer>
-      <p>&copy; Keren Vasserman, All rights reserved.</p>
+      &copy; Keren Vasserman,<br />
+      All rights reserved.
     </footer>
   </body>
 </html>
