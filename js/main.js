@@ -23,11 +23,7 @@ const gGame = {
   secsPassed: 0,
   mines: [],
 }
-// const gLevels = [
-//   {NAME: 'Beginner', SIZE: 4, MINES: 2},
-//   {NAME: 'Medium', SIZE: 8, MINES: 14},
-//   {NAME: 'Advanced', SIZE: 12, MINES: 32},
-// ]
+
 
 const gLevel = {
   //later will be update by lvl
@@ -55,6 +51,7 @@ function onInit() {
   document.querySelector('.seconds').innerHTML = `00`
   document.querySelector('.life').innerHTML = ''
   document.querySelector('.score').innerHTML = 0
+ document.querySelector('.mine-count').textContent = 0
   if (gLevel.SIZE === 4) {
     gUserLife = 2
   } else {
