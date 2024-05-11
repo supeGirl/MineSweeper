@@ -7,7 +7,6 @@
     <title>Mine Sweeper</title>
   </head>
   <body onload="onInit()">
-
     <div class="console">
       <h2>Score <span class="score">0</span></h2>
       <button class="player" onclick="onInit()">
@@ -19,11 +18,40 @@
       <span class="life"></span>
       Mine count:
       <span class="mine-count">0</span>
-      <!-- hints: <span class="hints">3</span> -->
+      Flag count:
+      <span class="flag-count">0</span>
+      <button class="hints"
+      onclick="useHint()">
+        <span class="hints-emoji"></span>
+      </button>
+    
+        <tbody class="highScores" data-cols="5" data-rows="2">
+        <tr >
+        <td>1</td>
+        <td id="highScore1"></td>
+        </tr>
+        <tr>
+        <td>2</td>
+        <td id="highScore2"></td>
+        </tr>
+        <tr>
+        <td>3</td>
+        <td id="highScore3"></td>
+        </tr>
+        <tr>
+        <td>4</td>
+        <td id="highScore4"></td>
+        </tr>
+        <tr>
+        <td>5</td>
+        <td id="highScore5"></td>
+        </tr>
+      </tbody>
+      </table>
       <br />
-      <button class="btn beg" role="button" onclick="changeLevel(4,2)">Beginner</button>
-      <button class="btn med" role="button" onclick="changeLevel(8,14)">Medium</button>
-      <button class="btn adv" role="button" onclick="changeLevel(12,32)">Advanced</button>
+      <button class="btn beg" role="button" onclick="changeLevel(4,2,'Beginner')">Beginner</button>
+      <button class="btn med" role="button" onclick="changeLevel(8,14,'Medium')">Medium</button>
+      <button class="btn adv" role="button" onclick="changeLevel(12,32,'Advanced')">Advanced</button>
 
       <table>
         <tbody class="board-game" data-cols="4" data-rows="4"></tbody>

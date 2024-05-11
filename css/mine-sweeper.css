@@ -42,6 +42,11 @@ table {
   background-color: lightgray;
 }
 
+.highScores{
+  display: none;
+
+}
+
 .board-game td {
   width: 53px;
   height: 53px;
@@ -61,6 +66,7 @@ table {
 
 .hidden {
   text-indent: -9999px;
+  background-color: rgb(192, 168, 168);
 }
 
 .player {
@@ -72,6 +78,16 @@ table {
 }
 .player-emoji {
   font-size: 35px;
+}
+.hints {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: center;
+}
+.hints-emoji {
+  font-size: 20px;
 }
 
 .footer {
@@ -124,7 +140,7 @@ table {
   border: none;
   outline: none;
   color: rgb(255, 255, 255);
-  background: #111;
+  background: #000000;
   cursor: pointer;
   position: relative;
   z-index: 0;

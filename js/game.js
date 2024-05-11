@@ -45,38 +45,6 @@ function countNegs(board, rowIdx, colIdx) {
   return neighborsCount
 }
 
-function expandShown(board, rowIdx, colIdx) {
-  if(rowIdx >= board.length || colIdx >= board[0].length) return
-  if(rowIdx < 0 || colIdx < 0) return
-  if (board[rowIdx][colIdx].isShown || board[rowIdx][colIdx].isMarked) return
-  board[rowIdx][colIdx].isShown = true
-  if (board[rowIdx][colIdx].minesAroundCount > 0) return
-
-  for (var i = rowIdx - 1; i <= rowIdx + 1; i++) {
-    for (var j = colIdx - 1; j <= colIdx + 1; j++) {
-      if (
-        i >= 0 &&
-        i < board.length &&
-        j >= 0 &&
-        j < board.length &&
-        (i - rowIdx) * (j - colIdx) === 0 &&
-        (i !== rowIdx || j !== colIdx)
-      ) {
-        if (!board[i][j].minesAroundCount) {
-        expandShown(board, i, j)
-     
-        }
-        else if (board[i][j].minesAroundCount > 0) {
-          board[i][j].isShown = true
-        }
-      }
-    }
-  }
-  console.log('board:', board)
-
-  renderBoard(board)
-}
-
 function updateLife() {
   var elLife = document.querySelector('.life')
   var lifeArray = []
@@ -91,19 +59,40 @@ function switchEmoji(newEmoji) {
   elPlayer.textContent = newEmoji
 }
 
-
 function checkGameOver() {
   // Game ends when all mines are marked, and all the other cells are shown
+  var isAllMinesMarked = true
+  var isNonMinesShow = true
+  var isOneMineSeen = false
 
   for (var i = 0; i < gLevel.SIZE; i++) {
     for (var j = 0; j < gLevel.SIZE; j++) {
       var currCell = gBoard[i][j]
 
-      if (currCell.isMine && !currCell.isMarked) return
-      if (!currCell.isMine && !currCell.isShown) return
+      if (currCell.isMine && !currCell.isMarked) {
+        isAllMinesMarked = false
+      }
+      if (!currCell.isMine && !currCell.isShown) {
+        isNonMinesShow = false
+      }
+      if (currCell.isMine && currCell.isShown) {
+        isOneMineSeen = true
+      }
+      if (currCell.isMarked && currCell.isShown) {
+        isAllMinesMarked = true
+      }
     }
   }
-  endGame(true)
+
+  if (isAllMinesMarked && isNonMinesShow && gUserLife > 0) {
+    endGame(true) // win
+    return
+  }
+
+  if (isOneMineSeen && gUserLife === 0) {
+    endGame(false) // lose
+    return
+  }
 }
 
 function endGame(isWin) {
@@ -113,18 +102,30 @@ function endGame(isWin) {
   if (!isWin) {
     switchEmoji(LOSERPLAYER)
     console.log('YOU LOSE!')
-    elMsg.textContent = 'Game over! You lost  try again!'
+    elMsg.textContent = `Game over! You lost after  try again!`
   } else {
     switchEmoji(WINNERLAYER)
     elMsg.textContent = 'Congratulations! You won! 🏆'
+    saveTimerScore()
+    saveHighScore()
+    displayBestScore()
     console.log('YOU WON!')
   }
   elModel.style.display = 'block'
   if (elCloseBtn) {
     elCloseBtn.addEventListener('click', hideModal)
   }
+
   stopTimer()
   gGame.isOn = false
+  //   confirm
+}
+
+function saveTimerScore() {
+  var minutes = document.querySelector('.minutes').innerHTML
+  var seconds = document.querySelector('.seconds').innerHTML
+  gCurrScore = +minutes * 60 + parseInt(seconds)
+  console.log('currScore:', gCurrScore)
 }
 
 function hideModal() {
@@ -139,15 +140,17 @@ function startTimer() {
   var elSecondContainer = document.querySelector('.seconds')
 
   var startTime = Date.now()
-  gIntervalId = setInterval(function () {
+  gTimeInterval = setInterval(function () {
     var elapsed = Math.floor((Date.now() - startTime) / 1000)
     var minutes = Math.floor(elapsed / 60)
     var seconds = elapsed % 60
 
     elSecondContainer.innerText = pad(seconds)
     elMinuteContainer.innerText = pad(minutes)
+    gGame.secsPassed = elapsed
   }, 1000)
 }
+
 function stopTimer() {
-  clearInterval(gIntervalId)
+  clearInterval(gTimeInterval)
 }
